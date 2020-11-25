@@ -261,14 +261,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// until EOF, writes the response to w, and orders the server to process a
 	// single request.
 	ctx := r.Context()
-	ctx = context.WithValue(ctx, "remote", r.RemoteAddr) //lint:ignore SA1029 TODO
-	ctx = context.WithValue(ctx, "scheme", r.Proto)      //lint:ignore SA1029 TODO
-	ctx = context.WithValue(ctx, "local", r.Host)        //lint:ignore SA1029 TODO
+	ctx = context.WithValue(ctx, "remote", r.RemoteAddr) //nolint:staticcheck
+	ctx = context.WithValue(ctx, "scheme", r.Proto)      //nolint:staticcheck
+	ctx = context.WithValue(ctx, "local", r.Host)        //nolint:staticcheck
 	if ua := r.Header.Get("User-Agent"); ua != "" {
-		ctx = context.WithValue(ctx, "User-Agent", ua)
+		ctx = context.WithValue(ctx, "User-Agent", ua) //nolint:staticcheck
 	}
 	if origin := r.Header.Get("Origin"); origin != "" {
-		ctx = context.WithValue(ctx, "Origin", origin)
+		ctx = context.WithValue(ctx, "Origin", origin) //nolint:staticcheck
 	}
 
 	w.Header().Set("content-type", contentType)

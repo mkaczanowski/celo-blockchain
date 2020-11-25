@@ -754,9 +754,9 @@ func confirm(text string) bool {
 
 func testExternalUI(api *core.SignerAPI) {
 
-	ctx := context.WithValue(context.Background(), "remote", "clef binary")
-	ctx = context.WithValue(ctx, "scheme", "in-proc")
-	ctx = context.WithValue(ctx, "local", "main")
+	ctx := context.WithValue(context.Background(), "remote", "clef binary") //nolint:staticcheck
+	ctx = context.WithValue(ctx, "scheme", "in-proc")                       //nolint:staticcheck
+	ctx = context.WithValue(ctx, "local", "main")                           //nolint:staticcheck
 	errs := make([]string, 0)
 
 	a := common.HexToAddress("0xdeadbeef000000000000000000000000deadbeef")
@@ -861,7 +861,7 @@ func testExternalUI(api *core.SignerAPI) {
 	{ // Metadata
 		api.UI.ShowInfo("Please check if you see the Origin in next listing (approve or deny)")
 		time.Sleep(delay)
-		api.List(context.WithValue(ctx, "Origin", "origin.com"))
+		api.List(context.WithValue(ctx, "Origin", "origin.com")) //nolint:staticcheck
 		expectResponse("metadata - origin", "Did you see origin (origin.com)? [yes/no] ", "yes")
 	}
 

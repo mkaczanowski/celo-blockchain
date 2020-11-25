@@ -262,7 +262,7 @@ func TestEmptyWorkIstanbul(t *testing.T) {
 	testEmptyWork(t, istanbulChainConfig, getAuthorizedIstanbulEngine(), true, false)
 }
 
-func testEmptyWork(t *testing.T, chainConfig *params.ChainConfig, engine consensus.Engine, expectEmptyBlock bool, shouldAddPendingTxs bool) {
+func testEmptyWork(t *testing.T, chainConfig *params.ChainConfig, engine consensus.Engine, expectEmptyBlock bool, shouldAddPendingTxs bool) { //nolint:unused
 	defer engine.Close()
 
 	w, _ := newTestWorker(t, chainConfig, engine, rawdb.NewMemoryDatabase(), 0, shouldAddPendingTxs)

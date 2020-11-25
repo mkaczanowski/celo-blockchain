@@ -61,9 +61,13 @@ issues:
     - path: p2p/discv5/
       linters:
         - deadcode
+        - unused
     - path: core/vm/instructions_test.go
       linters:
         - goconst
     - path: cmd/faucet/
       linters:
         - deadcode
+    - path: cmd/geth/dao_test.go
+      linters:
+        - unused

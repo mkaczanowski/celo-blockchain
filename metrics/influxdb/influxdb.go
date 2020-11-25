@@ -98,8 +98,8 @@ func (r *reporter) makeClient() (err error) {
 }
 
 func (r *reporter) run() {
-	intervalTicker := time.Tick(r.interval)
-	pingTicker := time.Tick(time.Second * 5)
+	intervalTicker := time.Tick(r.interval)  //nolint:staticcheck
+	pingTicker := time.Tick(time.Second * 5) //nolint:staticcheck
 
 	for {
 		select {

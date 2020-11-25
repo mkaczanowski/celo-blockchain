@@ -719,7 +719,7 @@ func (s *Server) wrapHandler(handler http.HandlerFunc) httprouter.Handle {
 				http.NotFound(w, req)
 				return
 			}
-			ctx = context.WithValue(ctx, "node", node)
+			ctx = context.WithValue(ctx, "node", node) //nolint:staticcheck
 		}
 
 		if id := params.ByName("peerid"); id != "" {
@@ -734,7 +734,7 @@ func (s *Server) wrapHandler(handler http.HandlerFunc) httprouter.Handle {
 				http.NotFound(w, req)
 				return
 			}
-			ctx = context.WithValue(ctx, "peer", peer)
+			ctx = context.WithValue(ctx, "peer", peer) //nolint:staticcheck
 		}
 
 		handler(w, req.WithContext(ctx))

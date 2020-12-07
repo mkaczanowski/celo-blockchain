@@ -36,6 +36,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
+	ed25519 "github.com/hdevalence/ed25519consensus"
 
 	//lint:ignore SA1019 Needed for precompile
 	"golang.org/x/crypto/ripemd160"
@@ -105,15 +106,16 @@ var PrecompiledContractsByzantium = map[common.Address]PrecompiledContract{
 // PrecompiledContractsIstanbul contains the default set of pre-compiled Ethereum
 // contracts used in the Istanbul release.
 var PrecompiledContractsIstanbul = map[common.Address]PrecompiledContract{
-	common.BytesToAddress([]byte{1}): &ecrecover{},
-	common.BytesToAddress([]byte{2}): &sha256hash{},
-	common.BytesToAddress([]byte{3}): &ripemd160hash{},
-	common.BytesToAddress([]byte{4}): &dataCopy{},
-	common.BytesToAddress([]byte{5}): &bigModExp{},
-	common.BytesToAddress([]byte{6}): &bn256AddIstanbul{},
-	common.BytesToAddress([]byte{7}): &bn256ScalarMulIstanbul{},
-	common.BytesToAddress([]byte{8}): &bn256PairingIstanbul{},
-	common.BytesToAddress([]byte{9}): &blake2F{},
+	common.BytesToAddress([]byte{1}):   &ecrecover{},
+	common.BytesToAddress([]byte{2}):   &sha256hash{},
+	common.BytesToAddress([]byte{3}):   &ripemd160hash{},
+	common.BytesToAddress([]byte{4}):   &dataCopy{},
+	common.BytesToAddress([]byte{5}):   &bigModExp{},
+	common.BytesToAddress([]byte{6}):   &bn256AddIstanbul{},
+	common.BytesToAddress([]byte{7}):   &bn256ScalarMulIstanbul{},
+	common.BytesToAddress([]byte{8}):   &bn256PairingIstanbul{},
+	common.BytesToAddress([]byte{9}):   &blake2F{},
+	common.BytesToAddress([]byte{0xa}): &ed25519Verify{},
 
 	// Celo Precompiled Contracts
 	transferAddress:              &transfer{},
@@ -826,6 +828,35 @@ func (c *blake2F) Run(input []byte, caller common.Address, evm *EVM, gas uint64)
 		binary.LittleEndian.PutUint64(output[offset:offset+8], h[i])
 	}
 	return output, gas, nil
+}
+
+// ed25519Verify implements a native Ed25519 signature verification.
+type ed25519Verify struct{}
+
+// RequiredGas returns the gas required to execute the pre-compiled contract.
+func (c *ed25519Verify) RequiredGas(input []byte) uint64 {
+	const sha2_512WordLength = 64
+
+	words := uint64(len(input) / sha2_512WordLength)
+	return params.Ed25519VerifyGas + params.Sha2_512BaseGas + (words * params.Sha2_512PerWordGas)
+}
+
+func (c *ed25519Verify) Run(input []byte, caller common.Address, evm *EVM, gas uint64) ([]byte, uint64, error) {
+	// Check if all required arguments are present
+	if len(input) < 96 {
+		return true32Byte, gas, nil
+	}
+
+	publicKey := input[0:32]  // 32 bytes
+	signature := input[32:96] // 64 bytes
+	message := input[96:]     // arbitrary length
+
+	// Verify the Ed25519 signature against the public key and message
+	// https://godoc.org/golang.org/x/crypto/ed25519#Verify
+	if ed25519.Verify(publicKey, message, signature) {
+		return false32Byte, gas, nil
+	}
+	return true32Byte, gas, nil
 }
 
 type getValidator struct{}
